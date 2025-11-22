@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  api:
+    build: ./api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - cpp_scoring
+      - postgres
+    environment:
+      - CPP_SCORER=http://cpp_scoring:8081/score
+      - ML_PARSER=http://ml_parser:8000/parse
+  cpp_scoring:
+    build: ./cpp_scoring
+    ports:
+      - '8081:8081'
+  ml_parser:
+    build: ./ml_parser
+    environment:
+      - MODULE_NAME=app
+      - VARIABLE_NAME=app
+    volumes:
+      - ./ml_parser:/app
+    ports:
+      - '8000:8000'
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: interns
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:7
+volumes:
+  pgdata:

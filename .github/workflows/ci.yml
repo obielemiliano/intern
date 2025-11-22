@@ -1,0 +1,24 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up CMake
+        run: sudo apt-get update && sudo apt-get install -y build-essential cmake
+      - name: Build C++
+        run: |
+          cd cpp_scoring
+          mkdir -p build && cd build
+          cmake ..
+          cmake --build . -- -j$(nproc)
+      - name: Node.js install
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install API deps
+        run: |
+          cd api && npm ci
+      - name: Lint / tests (placeholder)
+        run: echo "Add tests and linters"
